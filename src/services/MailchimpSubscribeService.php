@@ -211,7 +211,7 @@ class MailchimpSubscribeService extends Component
         }
 
         // create a new api instance, and subscribe
-        $mc = $this->getClient();;
+        $mc = $this->getClient();
 
         try {
             $result = $mc->request('lists/' . $audienceId . '/members/' . md5(strtolower($email)), ['status' => 'unsubscribed'], 'PATCH');
@@ -344,6 +344,126 @@ class MailchimpSubscribeService extends Component
             'values' => ['email' => $email]
         ]);
     }
+
+
+
+
+
+
+    public function createCampaign($data) {
+        // get settings
+        $settings = Plugin::$plugin->getSettings();
+
+        // create a new api instance, and subscribe
+        $mc = $this->getClient();
+
+        try {
+            $result = $mc->request('campaigns', $data, 'POST');
+        } catch (\Exception $e) { // an error occured
+            $message = $e->getMessage();
+            $errorObj = json_decode($message, false);
+
+            Craft::error('An error occured when trying to create campaign.', __METHOD__);
+
+            return new SubscribeResponse([
+                'action' => 'createCampaign',
+                'response' => $errorObj,
+                'success' => false,
+                'errorCode' => $errorObj->status,
+                'message' => Craft::t('mailchimp-subscribe', $errorObj->title),
+                'values' => ['data' => $data]
+            ]);
+        }
+
+        return new SubscribeResponse([
+            'action' => 'createCampaign',
+            'response' => $result,
+            'success' => true,
+            'errorCode' => 200,
+            'message' => Craft::t('mailchimp-subscribe', 'Unsubscribed successfully'),
+            'values' => ['data' => $data]
+        ]);
+    }
+
+
+    public function updateCampaign($campaignId, $data) {
+        // get settings
+        $settings = Plugin::$plugin->getSettings();
+
+        // create a new api instance, and subscribe
+        $mc = $this->getClient();
+
+        try {
+            $result = $mc->request('campaigns/'.$campaignId, $data, 'PATCH');
+        } catch (\Exception $e) { // an error occured
+            $message = $e->getMessage();
+            $errorObj = json_decode($message, false);
+
+            Craft::error('An error occured when trying to create campaign.', __METHOD__);
+
+            return new SubscribeResponse([
+                'action' => 'updateCampaign',
+                'response' => $errorObj,
+                'success' => false,
+                'errorCode' => $errorObj->status,
+                'message' => Craft::t('mailchimp-subscribe', $errorObj->title),
+                'values' => ['campaignId' => $campaignId, 'data' => $data]
+            ]);
+        }
+
+        return new SubscribeResponse([
+            'action' => 'updateCampaign',
+            'response' => $result,
+            'success' => true,
+            'errorCode' => 200,
+            'message' => Craft::t('mailchimp-subscribe', 'Unsubscribed successfully'),
+            'values' => ['campaignId' => $campaignId, 'data' => $data]
+        ]);
+    }
+
+
+    public function setCampaignContent($campaignId, $data) {
+        // get settings
+        $settings = Plugin::$plugin->getSettings();
+
+        // create a new api instance, and subscribe
+        $mc = $this->getClient();
+
+        try {
+            $result = $mc->request('campaigns/'.$campaignId.'/content', $data, 'PUT');
+        } catch (\Exception $e) { // an error occured
+            $message = $e->getMessage();
+            $errorObj = json_decode($message, false);
+
+            Craft::error('An error occured when trying to create campaign.', __METHOD__);
+
+            return new SubscribeResponse([
+                'action' => 'setCampaignContent',
+                'response' => $errorObj,
+                'success' => false,
+                'errorCode' => $errorObj->status,
+                'message' => Craft::t('mailchimp-subscribe', $errorObj->title),
+                'values' => ['campaignId' => $campaignId, 'data' => $data]
+            ]);
+        }
+
+        return new SubscribeResponse([
+            'action' => 'setCampaignContent',
+            'response' => $result,
+            'success' => true,
+            'errorCode' => 200,
+            'message' => Craft::t('mailchimp-subscribe', 'Unsubscribed successfully'),
+            'values' => ['campaignId' => $campaignId, 'data' => $data]
+        ]);
+    }
+
+
+
+
+
+
+
+
 
     /**
      * Return member object by email
